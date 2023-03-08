@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"path"
+	"strconv"
 )
 
 const (
@@ -59,6 +60,15 @@ func getString(l int64) string {
 	return temp
 }
 
+func populate(n int, s []Entry) {
+	for i := 0; i < n; i++ {
+		name := getString(4)
+		surname := getString(5)
+		num := strconv.Itoa(random(100, 199))
+		data = append(data, Entry{name, surname, num})
+	}
+}
+
 func main() {
 	args := os.Args
 	if len(args) == 1 {
@@ -66,10 +76,6 @@ func main() {
 		fmt.Printf("Usage: %s search|list <arguments>\n", exe)
 		return
 	}
-
-	data = append(data, Entry{"Mihalis", "Tsoukalos", "2109416471"})
-	data = append(data, Entry{"Mary", "Doe", "2109416871"})
-	data = append(data, Entry{"John", "Black", "2109416123"})
 
 	// Differentia{te between the commands
 	switch args[1] {
