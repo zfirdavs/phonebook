@@ -6,6 +6,11 @@ import (
 	"path"
 )
 
+const (
+	min = 0
+	max = 26
+)
+
 type Entry struct {
 	Name    string
 	Surname string
