@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"time"
 )
 
 const (
@@ -76,6 +77,13 @@ func main() {
 		fmt.Printf("Usage: %s search|list <arguments>\n", exe)
 		return
 	}
+
+	seed := time.Now().Unix()
+	rand.Seed(seed)
+
+	// number of records
+	n := 100
+	populate(n, data)
 
 	// Differentia{te between the commands
 	switch args[1] {
