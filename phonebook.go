@@ -84,12 +84,13 @@ func main() {
 	// number of records
 	n := 100
 	populate(n, data)
+	fmt.Printf("Data has %d entries.\n", len(data))
 
 	// Differentia{te between the commands
 	switch args[1] {
 	case "search":
 		if len(args) != 3 {
-			fmt.Println("Usage: search Surname")
+			fmt.Println("Usage: search Tel number")
 			return
 		}
 
