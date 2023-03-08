@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"path"
 )
@@ -25,7 +26,7 @@ var data = []Entry{}
 
 func search(key string) *Entry {
 	for i, v := range data {
-		if v.Surname == key {
+		if v.Tel == key {
 			return &data[i]
 		}
 	}
@@ -36,6 +37,26 @@ func list() {
 	for _, v := range data {
 		fmt.Println(v)
 	}
+}
+
+func random(min, max int) int {
+	return rand.Intn(max-min) + min
+}
+
+func getString(l int64) string {
+	startChar := "A"
+	temp := ""
+	var i int64 = 1
+	for {
+		myRand := random(min, max)
+		newChar := string(startChar[0] + byte(myRand))
+		temp = temp + newChar
+		if i == l {
+			break
+		}
+		i++
+	}
+	return temp
 }
 
 func main() {
