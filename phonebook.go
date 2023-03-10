@@ -25,6 +25,7 @@ func (e Entry) String() string {
 }
 
 var data = []Entry{}
+var CSVFILE = "./csv.data"
 
 func search(key string) *Entry {
 	for i, v := range data {
@@ -75,6 +76,25 @@ func main() {
 	if len(args) == 1 {
 		exe := path.Base(args[0])
 		fmt.Printf("Usage: %s insert|delete|search|list <arguments>\n", exe)
+		return
+	}
+
+	_, err := os.Stat(CSVFILE)
+	if err != nil {
+		fmt.Println("Creating", CSVFILE)
+		f, err := os.Create(CSVFILE)
+		if err != nil {
+			f.Close()
+			fmt.Println(err)
+			return
+		}
+		f.Close()
+	}
+
+	fileInfo, err := os.Stat(CSVFILE)
+	mode := fileInfo.Mode()
+	if !mode.IsRegular() {
+		fmt.Println(CSVFILE, "not a regular file!")
 		return
 	}
 
