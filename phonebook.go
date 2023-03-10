@@ -156,10 +156,20 @@ func insert(e *Entry) error {
 	// update the index
 	_ = createIndex()
 
-	if err := saveCSVFile(CSVFILE); err != nil {
-		return err
+	return saveCSVFile(CSVFILE)
+}
+
+func deleteEntry(key string) error {
+	i, ok := index[key]
+	if !ok {
+		return fmt.Errorf("%s cannot be found", key)
 	}
-	return nil
+
+	data = append(data[:i], data[i+1:]...)
+	// update the index since key is not exist anymore
+	delete(index, key)
+
+	return saveCSVFile(CSVFILE)
 }
 
 func main() {
@@ -221,6 +231,21 @@ func main() {
 				fmt.Println(err)
 				return
 			}
+		}
+	case "delete":
+		if len(args) != 3 {
+			fmt.Println("Usage: delete Number")
+			return
+		}
+
+		t := strings.ReplaceAll(args[2], "-", "")
+		if !matchTel(t) {
+			fmt.Println("Not a valid telephone number:", t)
+			return
+		}
+
+		if err := deleteEntry(t); err != nil {
+			fmt.Println(err)
 		}
 
 	case "search":
