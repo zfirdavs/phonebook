@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"os"
 	"path"
+	"regexp"
+	"strings"
 )
 
 const (
@@ -106,6 +108,11 @@ func createIndex() error {
 	return nil
 }
 
+func matchTel(s string) bool {
+	t := []byte(s)
+	return regexp.MustCompile(`\d+$`).Match(t)
+}
+
 func main() {
 	args := os.Args
 	if len(args) == 1 {
@@ -147,6 +154,18 @@ func main() {
 
 	// Differentia{te between the commands
 	switch args[1] {
+	case "insert":
+		if len(args) != 5 {
+			fmt.Println("Usage: insert Name Surname Telephone")
+			return
+		}
+
+		t := strings.ReplaceAll(args[4], "-", "")
+		if !matchTel(t) {
+			fmt.Println("Not a valid telephone number:", t)
+			return
+		}
+
 	case "search":
 		if len(args) != 3 {
 			fmt.Println("Usage: search Tel number")
