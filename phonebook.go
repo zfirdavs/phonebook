@@ -74,7 +74,7 @@ func main() {
 	args := os.Args
 	if len(args) == 1 {
 		exe := path.Base(args[0])
-		fmt.Printf("Usage: %s search|list <arguments>\n", exe)
+		fmt.Printf("Usage: %s insert|delete|search|list <arguments>\n", exe)
 		return
 	}
 
