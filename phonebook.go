@@ -24,8 +24,11 @@ func (e Entry) String() string {
 	return fmt.Sprintf("Name: %s, Surname: %s, Phone: %s", e.Name, e.Surname, e.Tel)
 }
 
-var data = []Entry{}
-var CSVFILE = "./csv.data"
+var (
+	data    = []Entry{}
+	CSVFILE = "./csv.data"
+	index   map[string]int
+)
 
 func search(key string) *Entry {
 	for i, v := range data {
@@ -94,6 +97,15 @@ func readCSVFile(filepath string) error {
 	return nil
 }
 
+func createIndex() error {
+	index = make(map[string]int)
+	for i, k := range data {
+		key := k.Tel
+		index[key] = i
+	}
+	return nil
+}
+
 func main() {
 	args := os.Args
 	if len(args) == 1 {
@@ -124,6 +136,12 @@ func main() {
 	err = readCSVFile(CSVFILE)
 	if err != nil {
 		fmt.Println(err)
+		return
+	}
+
+	err = createIndex()
+	if err != nil {
+		fmt.Println("Cannot create index")
 		return
 	}
 
