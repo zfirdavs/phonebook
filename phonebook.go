@@ -1,12 +1,11 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"math/rand"
 	"os"
 	"path"
-	"strconv"
-	"time"
 )
 
 const (
@@ -15,9 +14,10 @@ const (
 )
 
 type Entry struct {
-	Name    string
-	Surname string
-	Tel     string
+	Name       string
+	Surname    string
+	Tel        string
+	LastAccess string
 }
 
 func (e Entry) String() string {
@@ -62,13 +62,36 @@ func getString(l int64) string {
 	return temp
 }
 
-func populate(n int, s []Entry) {
-	for i := 0; i < n; i++ {
-		name := getString(4)
-		surname := getString(5)
-		num := strconv.Itoa(random(100, 199))
-		data = append(data, Entry{name, surname, num})
+func readCSVFile(filepath string) error {
+	_, err := os.Stat(filepath)
+	if err != nil {
+		return err
 	}
+
+	f, err := os.Open(filepath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	// CSV file read all at once
+	lines, err := csv.NewReader(f).ReadAll()
+	if err != nil {
+		return err
+	}
+
+	for _, line := range lines {
+		temp := Entry{
+			Name:       line[0],
+			Surname:    line[1],
+			Tel:        line[2],
+			LastAccess: line[3],
+		}
+
+		data = append(data, temp)
+	}
+
+	return nil
 }
 
 func main() {
@@ -98,13 +121,11 @@ func main() {
 		return
 	}
 
-	seed := time.Now().Unix()
-	rand.Seed(seed)
-
-	// number of records
-	n := 100
-	populate(n, data)
-	fmt.Printf("Data has %d entries.\n", len(data))
+	err = readCSVFile(CSVFILE)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	// Differentia{te between the commands
 	switch args[1] {
