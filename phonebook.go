@@ -7,7 +7,9 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -99,6 +101,22 @@ func readCSVFile(filepath string) error {
 	return nil
 }
 
+func saveCSVFile(filepath string) error {
+	csvfile, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer csvfile.Close()
+
+	csvwriter := csv.NewWriter(csvfile)
+	for _, row := range data {
+		temp := []string{row.Name, row.Surname, row.Tel, row.LastAccess}
+		_ = csvwriter.Write(temp)
+	}
+	csvwriter.Flush()
+	return nil
+}
+
 func createIndex() error {
 	index = make(map[string]int)
 	for i, k := range data {
@@ -111,6 +129,37 @@ func createIndex() error {
 func matchTel(s string) bool {
 	t := []byte(s)
 	return regexp.MustCompile(`\d+$`).Match(t)
+}
+
+func initS(N, S, T string) *Entry {
+	if T == "" || S == "" {
+		return nil
+	}
+
+	LastAccess := strconv.FormatInt(time.Now().Unix(), 10)
+	return &Entry{
+		Name:       N,
+		Surname:    S,
+		Tel:        T,
+		LastAccess: LastAccess,
+	}
+}
+
+func insert(e *Entry) error {
+	// If tel is exist, return error
+	_, ok := index[e.Tel]
+	if !ok {
+		return fmt.Errorf("%s already exists", e.Tel)
+	}
+	data = append(data, *e)
+
+	// update the index
+	_ = createIndex()
+
+	if err := saveCSVFile(CSVFILE); err != nil {
+		return err
+	}
+	return nil
 }
 
 func main() {
@@ -152,7 +201,7 @@ func main() {
 		return
 	}
 
-	// Differentia{te between the commands
+	// Differentiate between the commands
 	switch args[1] {
 	case "insert":
 		if len(args) != 5 {
@@ -164,6 +213,14 @@ func main() {
 		if !matchTel(t) {
 			fmt.Println("Not a valid telephone number:", t)
 			return
+		}
+
+		entry := initS(args[2], args[3], t)
+		if entry != nil {
+			if err := insert(entry); err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
 
 	case "search":
